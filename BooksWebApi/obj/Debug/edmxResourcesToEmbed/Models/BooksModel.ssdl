@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="BooksModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="Author">
+    <Key>
+      <PropertyRef Name="AuthorId" />
+    </Key>
+    <Property Name="AuthorId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="FirstName" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="LastName" Type="varchar" MaxLength="50" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Book">
+    <Key>
+      <PropertyRef Name="BookId" />
+    </Key>
+    <Property Name="BookId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Title" Type="varchar" MaxLength="200" Nullable="false" />
+    <Property Name="ISBN" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="Edition" Type="int" Nullable="false" />
+    <Property Name="Year" Type="int" Nullable="false" />
+    <Property Name="Price" Type="decimal" Precision="6" Scale="2" />
+    <Property Name="PublisherId" Type="int" />
+  </EntityType>
+  <!--Errors Found During Generation:
+warning 6002: The table/view 'Books.dbo.BookAuthorMapping' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+  <EntityType Name="BookAuthorMapping">
+    <Key>
+      <PropertyRef Name="BookId" />
+      <PropertyRef Name="AuthorId" />
+    </Key>
+    <Property Name="BookId" Type="int" Nullable="false" />
+    <Property Name="AuthorId" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Publisher">
+    <Key>
+      <PropertyRef Name="PublisherId" />
+    </Key>
+    <Property Name="PublisherId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="PublisherName" Type="varchar" MaxLength="100" Nullable="false" />
+  </EntityType>
+  <Association Name="FK_Book_Publisher">
+    <End Role="Publisher" Type="Self.Publisher" Multiplicity="0..1" />
+    <End Role="Book" Type="Self.Book" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Publisher">
+        <PropertyRef Name="PublisherId" />
+      </Principal>
+      <Dependent Role="Book">
+        <PropertyRef Name="PublisherId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_BookAuthorMapping_Authors">
+    <End Role="Author" Type="Self.Author" Multiplicity="1" />
+    <End Role="BookAuthorMapping" Type="Self.BookAuthorMapping" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Author">
+        <PropertyRef Name="AuthorId" />
+      </Principal>
+      <Dependent Role="BookAuthorMapping">
+        <PropertyRef Name="AuthorId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_BookAuthorMapping_Books">
+    <End Role="Book" Type="Self.Book" Multiplicity="1" />
+    <End Role="BookAuthorMapping" Type="Self.BookAuthorMapping" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Book">
+        <PropertyRef Name="BookId" />
+      </Principal>
+      <Dependent Role="BookAuthorMapping">
+        <PropertyRef Name="BookId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="BooksModelStoreContainer">
+    <EntitySet Name="Author" EntityType="Self.Author" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Book" EntityType="Self.Book" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Publisher" EntityType="Self.Publisher" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="BookAuthorMapping" EntityType="Self.BookAuthorMapping" store:Type="Tables" store:Schema="dbo">
+      <DefiningQuery>SELECT 
+    [BookAuthorMapping].[BookId] AS [BookId], 
+    [BookAuthorMapping].[AuthorId] AS [AuthorId]
+    FROM [dbo].[BookAuthorMapping] AS [BookAuthorMapping]</DefiningQuery>
+    </EntitySet>
+    <AssociationSet Name="FK_Book_Publisher" Association="Self.FK_Book_Publisher">
+      <End Role="Publisher" EntitySet="Publisher" />
+      <End Role="Book" EntitySet="Book" />
+    </AssociationSet>
+    <AssociationSet Name="FK_BookAuthorMapping_Authors" Association="Self.FK_BookAuthorMapping_Authors">
+      <End Role="Author" EntitySet="Author" />
+      <End Role="BookAuthorMapping" EntitySet="BookAuthorMapping" />
+    </AssociationSet>
+    <AssociationSet Name="FK_BookAuthorMapping_Books" Association="Self.FK_BookAuthorMapping_Books">
+      <End Role="Book" EntitySet="Book" />
+      <End Role="BookAuthorMapping" EntitySet="BookAuthorMapping" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>
